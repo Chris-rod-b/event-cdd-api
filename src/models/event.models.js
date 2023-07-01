@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
 module.exports =  mongoose.model('Event', {
-    id: { type: Number },
     name: { type: String },
     location: { type: String },
     startedDate: { type: Date },

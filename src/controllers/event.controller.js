@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 
 router.post('/create', (req, res) => {
     Event.create(req.body)
-        .then(data => res.send(data))
+        .then(data => res.status(201).json(data))
         .catch(err => console.log(err))
 });
 
