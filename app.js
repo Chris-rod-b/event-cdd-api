@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const connectDb = require('./service.js');
+const connectDb = require('./util.js');
 
 const eventRoutes = require('./src/controllers/event.controller.js');
 
