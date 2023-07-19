@@ -1,7 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 
-const validateDbId = (req, res, next) => {
-    if (!!ObjectId.isValid(req.params.id)) {
+const validateDBId = (req, res, next) => {
+    if (!ObjectId.isValid(req.params.id)) {
         res.status(400).json({
             error: 'Id usado nao valido!',
             id: req.params.id
@@ -17,6 +17,12 @@ const raiseRecord404Error = (req, res) => {
     }) 
 }
 
+const errorHandler = (error, req, res, next) => {
+    res.status(500).json({ error })
+}
+
 module.exports = {
-    validateDbId, raiseRecord404Error
+    validateDBId, 
+    raiseRecord404Error, 
+    errorHandler
 }
