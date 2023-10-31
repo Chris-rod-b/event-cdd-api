@@ -20,6 +20,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use('/api/events', eventRoutes);
 app.use(errorHandler)
+app.use('src/uploads', express.static('uploads'))
 
 connectDb()
     .then(() => {

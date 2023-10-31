@@ -4,7 +4,7 @@ const router = express.Router();
 const Event = require('../models/event.models.js');
 const { generateCrudMethods } = require('../services');
 const eventCrud = generateCrudMethods(Event);
-const { validateDBId, raiseRecord404Error } = require('../middlewares')
+const { validateDBId, raiseRecord404Error, upload } = require('../middlewares')
 
 router.get('/test', 
     (req, res, next) => {next()},
@@ -17,10 +17,27 @@ router.get('/', (req, res, next) => {
         .catch(err => next(err))
 });
 
-router.post('/create', (req, res, next) => {
-    eventCrud.create(req.body)
-        .then(data => res.status(201).json(data))
-        .catch(err => next(err))
+router.post('/create', upload.single('banner'), (req, res, next) => {
+    const { name, location, startedDate, endedDate, concluded } = req.body;
+
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded.' });
+  }
+
+  const bannerImagePath = req.file.path; 
+
+  const event = {
+    name,
+    location,
+    startedDate,
+    endedDate,
+    concluded,
+    banner: bannerImagePath, 
+  };
+
+  eventCrud.create(event)
+    .then(data => res.status(201).json(data))
+    .catch(err => next(err));
 });
 
 router.put('/:id', validateDBId,  (req, res, next) => {
