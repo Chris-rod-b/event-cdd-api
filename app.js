@@ -16,11 +16,12 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "*")
     next();
 });
+
 //middleware
 app.use(bodyParser.json());
 app.use('/api/events', eventRoutes);
 app.use(errorHandler)
-app.use('src/uploads', express.static('uploads'))
+app.use('/uploads', express.static('uploads'))
 
 connectDb()
     .then(() => {

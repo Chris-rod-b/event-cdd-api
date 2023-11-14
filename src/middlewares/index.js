@@ -20,7 +20,7 @@ const raiseRecord404Error = (req, res) => {
     }) 
 }
 
-const uploadDirectory = 'src/uploads/';
+const uploadDirectory = 'uploads/';
 
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory);
@@ -38,13 +38,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const deleteFile = (filePath) => {
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+}
+
 const errorHandler = (error, req, res, next) => {
     res.status(500).json({ error })
 }
 
 module.exports = {
-    validateDBId, 
-    raiseRecord404Error, 
-    errorHandler,
-    upload
+  validateDBId, 
+  raiseRecord404Error, 
+  errorHandler,
+  upload,
+  deleteFile
 }

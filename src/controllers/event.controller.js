@@ -4,7 +4,7 @@ const router = express.Router();
 const Event = require('../models/event.models.js');
 const { generateCrudMethods } = require('../services');
 const eventCrud = generateCrudMethods(Event);
-const { validateDBId, raiseRecord404Error, upload } = require('../middlewares')
+const { validateDBId, raiseRecord404Error, upload, deleteFile } = require('../middlewares')
 
 router.get('/test', 
     (req, res, next) => {next()},
@@ -20,28 +20,41 @@ router.get('/', (req, res, next) => {
 router.post('/create', upload.single('banner'), (req, res, next) => {
     const { name, location, startedDate, endedDate, concluded } = req.body;
 
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded.' });
-  }
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded.' });
+    }
 
-  const bannerImagePath = req.file.path; 
+    const bannerImagePath = req.file.path; 
 
-  const event = {
-    name,
-    location,
-    startedDate,
-    endedDate,
-    concluded,
-    banner: bannerImagePath, 
-  };
+    const event = {
+        name,
+        location,
+        startedDate,
+        endedDate,
+        concluded,
+        banner: bannerImagePath, 
+    };
 
-  eventCrud.create(event)
-    .then(data => res.status(201).json(data))
-    .catch(err => next(err));
+    eventCrud.create(event)
+        .then(data => res.status(201).json(data))
+        .catch(err => next(err));
 });
 
-router.put('/:id', validateDBId,  (req, res, next) => {
-    eventCrud.update(req.params.id, req.body)
+router.put('/:id', upload.single('banner'), validateDBId,  (req, res, next) => {
+    const { name, location, startedDate, endedDate, concluded } = req.body;
+
+    const bannerImagePath = req.file.path;
+
+    const event = {
+        name,
+        location,
+        startedDate,
+        endedDate,
+        concluded,
+        banner: bannerImagePath, 
+    };
+
+    eventCrud.update(req.params.id, event)
         .then(data => {
             if (data)
                 res.send(data)
@@ -54,8 +67,10 @@ router.put('/:id', validateDBId,  (req, res, next) => {
 router.delete('/:id', validateDBId, (req, res) => {
     eventCrud.delete(req.params.id)
     .then(data => {
-        if (data)
+        if (data) {
             res.send(data)
+            deleteFile(data.banner)
+        }
         else 
             raiseRecord404Error(req, res)
     })
