@@ -32,11 +32,32 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, callback) => {
     const ext = path.extname(file.originalname);
-    callback(null, Date.now() + ext); // Unique filename
+    callback(null, Date.now() + ext); 
   },
 });
 
 const upload = multer({ storage: storage });
+
+const storageUpdate = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, uploadDirectory);
+  },
+  filename: (req, file, callback) => {
+    if (file.originalname == req.body.previousFileName) {
+      callback(null, file.originalname);
+    } else {
+      const ext = path.extname(file.originalname);
+      const newFileName = Date.now() + ext;
+      
+      const previousFilePath = path.join(uploadDirectory, req.body.previousFileName);
+      deleteFile(previousFilePath);
+
+      callback(null, newFileName);
+    }
+  },
+});
+
+const update = multer({ storage: storageUpdate });
 
 const deleteFile = (filePath) => {
   if (fs.existsSync(filePath)) {
@@ -53,5 +74,6 @@ module.exports = {
   raiseRecord404Error, 
   errorHandler,
   upload,
+  update,
   deleteFile
 }

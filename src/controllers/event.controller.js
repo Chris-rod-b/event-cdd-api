@@ -4,7 +4,7 @@ const router = express.Router();
 const Event = require('../models/event.models.js');
 const { generateCrudMethods } = require('../services');
 const eventCrud = generateCrudMethods(Event);
-const { validateDBId, raiseRecord404Error, upload, deleteFile } = require('../middlewares')
+const { validateDBId, raiseRecord404Error, upload, update, deleteFile } = require('../middlewares')
 
 router.get('/test', 
     (req, res, next) => {next()},
@@ -40,7 +40,7 @@ router.post('/create', upload.single('banner'), (req, res, next) => {
         .catch(err => next(err));
 });
 
-router.put('/:id', upload.single('banner'), validateDBId,  (req, res, next) => {
+router.put('/:id', update.single('banner'), validateDBId,  (req, res, next) => {
     const { name, location, startedDate, endedDate, concluded } = req.body;
 
     const bannerImagePath = req.file.path;

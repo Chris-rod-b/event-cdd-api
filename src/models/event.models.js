@@ -6,5 +6,5 @@ module.exports =  mongoose.model('Event', {
     startedDate: { type: Date },
     endedDate: { type: Date },
     concluded: { type: Boolean },
-    banner: {type: String }
+    banner: { type: String }
 }, 'cdd');
