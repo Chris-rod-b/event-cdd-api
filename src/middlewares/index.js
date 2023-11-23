@@ -3,6 +3,22 @@ const path = require('path');
 const fs = require('fs');
 const ObjectId = require('mongoose').Types.ObjectId;
 
+const uploadDirectory = 'uploads/';
+
+if (!fs.existsSync(uploadDirectory)) {
+  fs.mkdirSync(uploadDirectory);
+}
+
+const deleteFile = (filePath) => {
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+}
+
+const errorHandler = (error, req, res, next) => {
+  res.status(500).json({ error })
+}
+
 const validateDBId = (req, res, next) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.status(400).json({
@@ -18,12 +34,6 @@ const raiseRecord404Error = (req, res) => {
         error: 'Registro nao encontrado!',
         id: req.params.id
     }) 
-}
-
-const uploadDirectory = 'uploads/';
-
-if (!fs.existsSync(uploadDirectory)) {
-  fs.mkdirSync(uploadDirectory);
 }
 
 const storage = multer.diskStorage({
@@ -58,16 +68,6 @@ const storageUpdate = multer.diskStorage({
 });
 
 const update = multer({ storage: storageUpdate });
-
-const deleteFile = (filePath) => {
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-}
-
-const errorHandler = (error, req, res, next) => {
-    res.status(500).json({ error })
-}
 
 module.exports = {
   validateDBId, 
